@@ -28,22 +28,31 @@ print(f"contatos: {len(contatos)}")
 print(contatos)
 
 for contato in contatos:
-    nome = contato["nome"]
-    telefone = contato["telefone"]
+    nome = contato.get("nome", "").strip()
+    telefone = contato.get("telefone", "")
+
+    if not nome or not telefone:
+        print(f"Contato inválido")
+        continue
+
     mensagem = f"Olá, {nome} tudo bem com você?"
 
     headers = {"Content-Type": "application/json"}
     if CLIENT_TOKEN:
         headers["Client-Token"] = CLIENT_TOKEN
-
-    resposta = requests.post(
+    
+    try:     
+        resposta = requests.post(
         f"https://api.z-api.io/instances/{INSTANCE}/token/{TOKEN}/send-text",json={
             "phone": telefone,
             "message": mensagem,
         },
-        
+
         headers=headers,
         timeout=30,
-    )
+        )
+        resposta.raise_for_status()
+        print(f"Mensagem para {nome}")
 
-    print(f"Mensagem para {nome}, status: {resposta.status_code} ")
+    except Exception as erro:
+        print(f"Erro ao enviar mensagem para {nome}: {erro}")
