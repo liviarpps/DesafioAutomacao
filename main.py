@@ -10,3 +10,15 @@ supabase= create_client(
     os.getenv("SUPABASE_URL"),
     os.getenv("SUPABASE_KEY"),
 )
+
+response = (
+    supabase
+    .table("contatos")
+    .select("nome, telefone")
+    .limit(3)
+    .execute()
+)
+
+contatos = response.data
+print(f"contatos: {len(contatos)}")
+print(contatos)
